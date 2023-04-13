@@ -1,24 +1,30 @@
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jsoup.Jsoup;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.UnknownHostException;
 import java.util.List;
+import java.util.Objects;
 
 public class Parser {
+    private final static String ignore = "txt, pdf, tif, tiff, bmp, jpg, jpeg, gif, png, esp, docs, xlsx, doc, pptm, xls, xlsm".trim().replace(", ", "|");
 
-    public List<WebPage> parse(final @NotNull WebPage page) {
+    private static @Nullable URL apply(String linkTag) {
+        try {
+            return new URL(linkTag);
+        } catch (MalformedURLException e) {
+            return null;
+        }
+    }
 
-        return Jsoup.parse(page.getContent())
-                .select("a")
+    public List<URL> parse(final @NotNull WebPage page) throws ContentNotFetchYet {
+        return page.getContent()
+                .select("a[href~=.*(?<!" + ignore + ")$]")
                 .stream()
-                .map(linkTag -> {
-                    try {
-                        return new WebPage(new URL(linkTag.attr("href")), page.getDepth());
-                    } catch (UnknownHostException | MalformedURLException e) {
-                        throw new RuntimeException(e);
-                    }
-                }).toList();
+                .map(link -> Parser.apply(link.attr("href")))
+                .filter(Objects::nonNull)
+                .toList();
+
     }
 }
