@@ -1,3 +1,5 @@
+import org.jsoup.nodes.Document;
+
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
@@ -5,7 +7,7 @@ import java.net.UnknownHostException;
 public class WebPage {
     private final URL url;
     private final String hostIp;
-    private String content;
+    private Document content;
     private final int depth;
 
     public WebPage(URL url) throws UnknownHostException {
@@ -26,16 +28,28 @@ public class WebPage {
         return url;
     }
 
-    public void setContent(String content) {
+    public void setContent(Document content) {
         this.content = content;
     }
 
-    public String getContent() {
+    public Document getContent() throws ContentNotFetchYet {
+        if (this.content == null) throw new ContentNotFetchYet();
         return content;
     }
 
     public int getDepth() {
         return depth;
+    }
+
+
+    public String generateFileTemplate() {
+
+        return "<doc>\n" +
+                "<Url>" + this.url + "</Url>\n" +
+                content.getElementsByTag("html") + "\n" +
+                content.getElementsByTag("title") + "\n" +
+                content.getElementsByTag("body") + "\n" +
+                "</doc>\n";
     }
 
     @Override
