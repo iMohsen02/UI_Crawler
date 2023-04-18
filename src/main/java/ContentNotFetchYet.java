@@ -1,4 +1,4 @@
-public class ContentNotFetchYet extends Exception{
+public class ContentNotFetchYet extends RuntimeException{
     public ContentNotFetchYet() {
         super("Webpage content haven't fetch yet");
     }
