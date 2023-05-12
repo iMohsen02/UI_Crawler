@@ -1,3 +1,5 @@
+package com.example.uicrawler;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -10,6 +12,14 @@ import java.util.concurrent.CompletableFuture;
 
 public class Parser {
     private final static String ignore = "txt, pdf, tif, tiff, bmp, jpg, jpeg, gif, png, esp, docs, xlsx, doc, pptm, xls, xlsm".trim().replace(", ", "|");
+    private final URL host;
+    private final String baseDomain;
+    public Parser(URL seed) {
+        this.host = seed;
+        this.baseDomain = host.getHost().replace("http://", "")
+                .replace("https://", "")
+                .replace("www.", "");
+    }
 
     private static @Nullable URL apply(String linkTag) {
         try {
@@ -21,17 +31,15 @@ public class Parser {
 
     public List<URL> parse(final @NotNull WebPage page) {
 
-//        long time = System.currentTimeMillis();
         List<URL> hrefs = page.getStatus() != WebPage.Status.CRAWLED ? new ArrayList<>() :
                 page.getContent()
-                        .select("a[href~=.*(?<!" + ignore + ")$]")
+                        .select("a[href]")
                         .stream()
                         .map(link -> Parser.apply(link.attr("href")))
                         .filter(Objects::nonNull)
+                        .filter(url -> url.getHost().endsWith(baseDomain))
                         .toList();
 
-//        System.out.println("\tparse:\t" + (System.currentTimeMillis() - time) / 1000.);
-//        System.out.println("\t\t" + page);
         return hrefs;
     }
 

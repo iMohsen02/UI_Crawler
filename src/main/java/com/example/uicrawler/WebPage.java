@@ -1,3 +1,5 @@
+package com.example.uicrawler;
+
 import org.jsoup.nodes.Document;
 
 import java.net.InetAddress;
@@ -18,7 +20,7 @@ public class WebPage {
 
 
     public enum Status {
-        CRAWLED, UNCRAWLED, HTTPS_REQUEST_PROBLEM, MALFORMED_URL_EXCEPTION, SOCKET_TIME_OUT_EXCEPTION, FILTERED, OTHER_EXCEPTION, CONNECT_EXCEPTION, SSL_HAND_SHAKE_EXCEPTION, VALIDATOR_EXCEPTION, UNKNOWN_HOST_EXCEPTION, IO_EXCEPTION;
+        CRAWLED, UNCRAWLED, HTTPS_PROBLEM, MALFORMED, TIME_OUT, FILTERED, OTHER_EXCEPTION, CONNECT_EXCEPTION, SSL_EXCEPTION, VALIDATOR_EXCEPTION, UNKNOWN_HOST, IO_EXCEPTION;
     }
 
     public WebPage(URL url) {
@@ -32,7 +34,7 @@ public class WebPage {
         try {
             this.hostIp = InetAddress.getByName(url.getHost()).getHostAddress();
         } catch (UnknownHostException unknownHostException) {
-            this.status = Status.UNKNOWN_HOST_EXCEPTION;
+            this.status = Status.UNKNOWN_HOST;
         }
     }
 
@@ -69,7 +71,7 @@ public class WebPage {
                         "<Url>" + this.url + "</Url>\n" +
                         content.getElementsByTag("html") + "\n" +
                         content.getElementsByTag("title") + "\n" +
-                        content.getElementsByTag("body") + "\n" +
+                        "</pure>" + content.text() + "</pure>\n" +
                         "</doc>\n";
     }
 
